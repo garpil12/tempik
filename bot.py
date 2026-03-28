@@ -563,39 +563,45 @@ def tagall_worker():
             task_queue.task_done()
             continue
 
-        # ================= LIMIT GC (RESET 00:00 WIB) =================
-        limit_data = load_limit()
-        today = get_today_wib()
+# ================= LIMIT GC (RESET 00:00 WIB) =================
+limit_data = load_limit()
+today = get_today_wib()
 
-        last_used = limit_data.get(str(chat_id))
+links = re.findall(r"(https?://t\.me/\S+)", text)
+partner_link = links[0] if links else "-"
+partner_key = normalize_link(partner_link)
 
-        if last_used == today:
-            task_queue.task_done()
-            continue
+# 🔥 CEK LIMIT BERDASARKAN LINK (SINKRON HANDLER)
+if limit_data.get(partner_key) == today:
+    task_queue.task_done()
+    continue
 
-        print("🔥 AMBIL TASK:", user_id)
+print("🔥 AMBIL TASK:", user_id)
 
-        try:
-            if user_queue and user_queue[0] != user_id:
-                task_queue.put((chat_id, text, user_id))
-                time.sleep(0.2)
-                continue
+try:
+    # 🔥 FIX ANTRIAN (JANGAN MASUKIN BALIK KE QUEUE)
+    if user_queue and user_queue[0] != user_id:
+        time.sleep(0.3)
+        task_queue.task_done()
+        continue
 
-            running_task = True
-            print("🚀 PROSES USER:", user_id)
+    running_task = True
+    print("🚀 PROSES USER:", user_id)
 
-            links = re.findall(r"(https?://t\.me/\S+)", text)
-            partner_link = links[0] if links else "-"
+    links = re.findall(r"(https?://t\.me/\S+)", text)
+    partner_link = links[0] if links else "-"
 
-            start_msg = (
-                "🚀 𝐓𝐀𝐆𝐀𝐋𝐋 𝐃𝐈𝐌𝐔𝐋𝐀𝐈\n\n"
-                f"🔗 partner : {partner_link}\n"
-                "⏰   durasi : 5 menit\n"
-                "📍 JIKA BOT EROR SILAHKAN KESINI @tagallnoirfluerBot"
-            )
+    start_msg = (
+        "🚀 𝐓𝐀𝐆𝐀𝐋𝐋 𝐃𝐈𝐌𝐔𝐋𝐀𝐈\n\n"
+        f"🔗 partner : {partner_link}\n"
+        "⏰   durasi : 5 menit\n"
+        "📍 JIKA BOT EROR SILAHKAN KESINI @tagallnoirfluerBot"
+    )
 
-            bot.send_message(chat_id, start_msg)
-            bot.send_message(user_id, start_msg)
+    bot.send_message(chat_id, start_msg)
+    bot.send_message(user_id, start_msg)
+
+            
 
 # ================= START =================
             start_progress(user_id)
@@ -604,6 +610,7 @@ def tagall_worker():
 
             members = get_members(chat_id)
             if not members:
+                task_queue.task_done()
                 continue
 
             user_ids = list(members.keys())
@@ -636,18 +643,21 @@ def tagall_worker():
                             parse_mode="HTML",
                         )
 
-                        sent_messages.append(msg.message_id)
+                        # 🔥 FIX AUTO DELETE (AMANIN MESSAGE)
+                        if msg and msg.message_id:
+                            sent_messages.append(msg.message_id)
+
                         sent += len(batch)
                         update_progress(user_id, sent, total)
 
                     except Exception as e:
                         print("❌  ", e)
                         if "Too Many Requests" in str(e):
-                            time.sleep(1.8)
+                            time.sleep(2)
                         else:
-                            time.sleep(0.6)
+                            time.sleep(0.8)
 
-                    time.sleep(BASE_DELAY + random.uniform(0.03, 0.12))
+                    time.sleep(BASE_DELAY + random.uniform(0.05, 0.2))
 
             # ================= SELESAI GC =================
             bot.send_message(
@@ -657,15 +667,16 @@ def tagall_worker():
                 f"👥 Total: {sent}"
             )
 
-            # 🔥 SAVE LIMIT (BERDASARKAN TANGGAL WIB)
-            limit_data[str(chat_id)] = today
+            # 🔥 SAVE LIMIT (PAKAI LINK, BUKAN CHAT_ID)
+            partner_key = normalize_link(partner_link)
+            limit_data[partner_key] = today
             save_limit(limit_data)
 
             # 🔥 DEBUG
             print("TOTAL MSG:", len(sent_messages))
             print("LIST MSG:", sent_messages[:5])
 
-            # 🔥 AUTO DELETE
+            # 🔥 AUTO DELETE (LEBIH STABIL)
             if sent_messages:
                 threading.Thread(
                     target=auto_delete_messages,
@@ -675,21 +686,25 @@ def tagall_worker():
 
             # ============== PRIVATE ==============
             try:
-                bot.edit_message_text(
-                    chat_id=user_id,
-                    message_id=progress_map[user_id]["msg_id"],
-                    text=f"✅       𝐓𝐀𝐆𝐀𝐋𝐋 𝐒𝐄𝐋𝐄𝐒𝐀𝐈\n\n"
-                         f"🔗 partner : {partner_link}\n"
-                         f"🧹 semua mention dihapus otomatis\n"
-                         f"👥 Total: {sent}\n"
-                         f"⏱ 5 menit"
-                )
-            except:
-                pass
+                if user_id in progress_map:
+                    bot.edit_message_text(
+                        chat_id=user_id,
+                        message_id=progress_map[user_id]["msg_id"],
+                        text=f"✅       𝐓𝐀𝐆𝐀𝐋𝐋 𝐒𝐄𝐋𝐄𝐒𝐀𝐈\n\n"
+                             f"🔗 partner : {partner_link}\n"
+                             f"🧹 semua mention dihapus otomatis\n"
+                             f"👥 Total: {sent}\n"
+                             f"⏱ 5 menit"
+                    )
+            except Exception as e:
+                print("❌ edit private:", e)
 
 # ================= HAPUS ANTRIAN =================
-            if user_queue and user_queue[0] == user_id:
-                user_queue.pop(0)
+            if user_queue:
+                if user_queue[0] == user_id:
+                    user_queue.pop(0)
+                elif user_id in user_queue:
+                    user_queue.remove(user_id)
 
         except Exception as e:
             print("❌  ERROR:", e)
