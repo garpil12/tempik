@@ -17,7 +17,7 @@ import database
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
-TOKEN = "8307438695:AAEU8MPX2BSj7EH5VOjHVhtfqloS7olHObg"
+TOKEN = "8685315507:AAEc6ybSHdpZSap5mBTvEiHX4e-o8NVnSvg"
 API_URL = "http://127.0.0.1:5000/get"
 TARGET_CHATS = [-1002896045673]
 FORCE_GROUP = -1002896045673   # 🔥 WAJIB (buat cek join)
@@ -591,7 +591,7 @@ def tagall_worker():
                 "🚀 𝐓𝐀𝐆𝐀𝐋𝐋 𝐃𝐈𝐌𝐔𝐋𝐀𝐈\n\n"
                 f"🔗 partner : {partner_link}\n"
                 "⏰   durasi : 5 menit\n"
-                "📍 JIKA BOT EROR SILAHKAN KESINI @tagalhyperBot"
+                "📍 JIKA BOT EROR SILAHKAN KESINI @tagallnoirfluerBot"
             )
 
             bot.send_message(chat_id, start_msg)
