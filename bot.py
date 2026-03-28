@@ -12,7 +12,7 @@ from queue import Queue
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Updater, MessageHandler, Filters, CallbackContext, CommandHandler, CallbackQueryHandler
 from telethon import TelegramClient
-import database
+import database4
 
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
@@ -470,7 +470,7 @@ def get_members(chat_id):
 
 
 # ================= LIMIT GC =================
-LIMIT_FILE = "limit_gc.json"
+LIMIT_FILE = "limit_gc.json5"
 
 from datetime import datetime, timedelta, timezone
 
@@ -850,8 +850,8 @@ def restore_cmd(update, context):
             files = z.namelist()
 
             # ================= VALIDASI ISI =================
-            valid = any("partner.json" in f for f in files) or \
-                    any("setting.json" in f for f in files)
+            valid = any("partner.json5" in f for f in files) or \
+                    any("setting.json5" in f for f in files)
 
             if not valid:
                 update.message.reply_text("❌ isi zip tidak valid")
@@ -865,7 +865,7 @@ def restore_cmd(update, context):
                 if os.path.exists("setting.json5"):
                     backup.write("setting.json5")
                 if os.path.exists("database4"):
-                    for root, dirs, files2 in os.walk("database"):
+                    for root, dirs, files2 in os.walk("database4"):
                         for f in files2:
                             backup.write(os.path.join(root, f))
 
@@ -876,7 +876,7 @@ def restore_cmd(update, context):
 
         # ================= AUTO RESTART =================
         import os
-        os.execv("/root/tagallbot/venv/bin/python", ["python", "bot.py"])
+        os.execv("/root/noirbot/venv/bin/python", ["python", "bot6.py"])
 
     except Exception as e:
         update.message.reply_text(f"❌ restore gagal\n{e}")
