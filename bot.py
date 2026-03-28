@@ -705,7 +705,6 @@ def is_user_joined(user_id):
         return member.status in ["member", "administrator", "creator"]
     except:
         return False
-
 # ================= HANDLER =================
 def handle_private(update: Update, context: CallbackContext):
     global running_task
@@ -754,7 +753,18 @@ def handle_private(update: Update, context: CallbackContext):
         msg.reply_text("❌ Link tidak terdaftar partner")
         return
 
-    # ================= LIMIT =================
+    # ================= CEK LIMIT (🔥 FIX UTAMA) =================
+    limit_data = load_limit()
+    today = get_today_wib()
+
+    partner_link = links[0]
+    partner_key = normalize_link(partner_link)
+
+    if limit_data.get(partner_key) == today:
+        msg.reply_text("❌ Group ini sudah request tagall hari ini")
+        return
+
+    # ================= LIMIT ANTRIAN =================
     antrian = task_queue.qsize()
 
     if antrian >= 3:
