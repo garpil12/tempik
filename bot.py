@@ -19,17 +19,17 @@ asyncio.set_event_loop(loop)
 
 TOKEN = "8307438695:AAEU8MPX2BSj7EH5VOjHVhtfqloS7olHObg"
 API_URL = "http://127.0.0.1:5000/get"
-TARGET_CHATS = [-1002430300514]
-FORCE_GROUP = -1002430300514   # 🔥 WAJIB (buat cek join)
-FORCE_LINK = "https://t.me/officialhyperion"
+TARGET_CHATS = [-1002896045673]
+FORCE_GROUP = -1002896045673   # 🔥 WAJIB (buat cek join)
+FORCE_LINK = "https://t.me/ofcnoirfleur"
 
 OWNER_IDS = [8209644174, 5674665043]
-PARTNER_FILE = "partner.json"
-SETTING_FILE = "setting.json"
+PARTNER_FILE = "partner.json5"
+SETTING_FILE = "setting.json5"
 
 api_id = 33370509
 api_hash = "669af6caebf2aca264b16cf8b40d37b2"
-client = TelegramClient("session_new1", api_id, api_hash)
+client = TelegramClient("session_new8", api_id, api_hash)
 
 task_queue = Queue()
 running_task = False  # 🔥 ANTI DOUBLE TASK
@@ -289,12 +289,12 @@ def start_cmd(update: Update, context: CallbackContext):
 
     # ================= RGB GLITCH =================
     glitch = [
-        "💜 HYPΞRIØN 💜",
-        "💙 HYPERION 💙",
-        "💚 HYPΞRIØN 💚",
-        "💛 HYPERION 💛",
-        "🧡 HYPΞRIØN 🧡",
-        "❤️ HYPERION ❤️"
+        "💜 NOIRFLUER 💜",
+        "💙 NOIRFLUER 💙",
+        "💚 NOIRFLUER 💚",
+        "💛 NOIRFLUER 💛",
+        "🧡 NOIRFLUER 🧡",
+        "❤️ NOIRFLUER ❤️"
     ]
 
     for g in glitch:
@@ -338,7 +338,7 @@ def start_cmd(update: Update, context: CallbackContext):
 
     # ================= FINAL TEXT (FIX CLEAN) =================
     text = (
-        "𓊆 ✨ 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐓𝐎 𝐁𝐎𝐓 𝐇𝐘𝐏𝐄𝐑𝐈𝐎𝐍 ✨ 𓊇 \n\n"
+        "𓊆 ✨ 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐓𝐎 𝐁𝐎𝐓 𝗡𝗢𝗜𝗥𝗙𝗟𝗨𝗘𝗥 ✨ 𓊇 \n\n"
 
         "╭───────────────╮\n"
         "│ ٬٬ ࣪ ، 𒀭 bot tag all dengan sistem otomatis.\n"
@@ -378,7 +378,7 @@ def start_cmd(update: Update, context: CallbackContext):
         pass
 
     # ================= FOTO SYSTEM =================
-    photo_path = "database/start.jpg"
+    photo_path = "database4/start.jpg"
 
     if data.get("start_pict"):
         context.bot.send_photo(
@@ -632,7 +632,7 @@ def tagall_worker():
                     try:
                         msg = bot.send_message(
                             chat_id,
-                            f" 💕 BOT TAGALL HY0ERION 💖\n\n{text}\n\n{mention_text}",
+                            f" 💕 BOT TAGALL NOIRFLUER 💖\n\n{text}\n\n{mention_text}",
                             parse_mode="HTML",
                         )
 
@@ -835,11 +835,11 @@ def restore_cmd(update, context):
             # ================= BACKUP LAMA =================
             backup_name = f"backup_before_restore_{int(time.time())}.zip"
             with zipfile.ZipFile(backup_name, 'w') as backup:
-                if os.path.exists("partner.json"):
-                    backup.write("partner.json")
-                if os.path.exists("setting.json"):
-                    backup.write("setting.json")
-                if os.path.exists("database"):
+                if os.path.exists("partner.json5"):
+                    backup.write("partner.json5")
+                if os.path.exists("setting.json5"):
+                    backup.write("setting.json5")
+                if os.path.exists("database4"):
                     for root, dirs, files2 in os.walk("database"):
                         for f in files2:
                             backup.write(os.path.join(root, f))
@@ -861,7 +861,7 @@ def main():
     updater = Updater(TOKEN, use_context=True)
     bot = updater.bot
 
-    database.start_system(bot)
+    database4.start_system(bot)
 
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("restore", restore_cmd))
