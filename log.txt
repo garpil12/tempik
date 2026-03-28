@@ -1,7 +1,13 @@
 nohup: ignoring input
 /root/tagallbot/venv/lib/python3.12/site-packages/telegram/utils/request.py:49: UserWarning: python-telegram-bot is using upstream urllib3. This is allowed but not supported by python-telegram-bot maintainers.
   warnings.warn(
-QUEUE INIT: []
-📦 SYSTEM BACKUP AKTIF
-✅ Telethon nyala
-🔥 WORKER HIDUP
+Server sent a very old message with ID 7621998394734832077, ignoring (see FAQ for details)
+Server sent a very old message with ID 7621998394734831649, ignoring (see FAQ for details)
+Security error while unpacking a received message: Server replied with a wrong session ID (see FAQ for details)
+Server sent a very old message with ID 7622037986281130169, ignoring (see FAQ for details)
+Server sent a very old message with ID 7622037986281130005, ignoring (see FAQ for details)
+Server sent a very old message with ID 7622037986281798697, ignoring (see FAQ for details)
+Server sent a very old message with ID 7622037986281798677, ignoring (see FAQ for details)
+Error executing high-level request after reconnect: <class 'telethon.errors.common.TypeNotFoundError'>: Could not find a matching Constructor ID for the TLObject that was supposed to be read with ID 8f97c628. See the FAQ for more details. Remaining bytes: b'(\xc6\x97\x8f{\x1c\x00R\x00\x00\x00\x00\xf2\x14=\x88\x01\x00\x00\x00`\xe2\x88\xd0&\xcf\xfe\xdc\x05ceyya\x00\x00\x08eyyyanna\x00\x00\x00\r6285692923211\x00\x00\x06\xf7\xd1\x82\x02\x00\x00\x00G\x0ek\x1b\x96\xe8yU\x11\x01\x08\x08sY\xfc\xa9\x18C\x80C94QE\x00\x7f\x00\x00\x05\x00\x00\x00?p\x8c\x009\xeb\xc6i\x9da\x9b\x92\xe3\x17\x00\x00\xe7\xe8YU\xd8\x9c\\\xea\xf3\xf1\x14\xbe`\xf7X\x82\xcc7sO'
+/root/tagallbot/venv/lib/python3.12/site-packages/telegram/utils/request.py:49: UserWarning: python-telegram-bot is using upstream urllib3. This is allowed but not supported by python-telegram-bot maintainers.
+  warnings.warn(
