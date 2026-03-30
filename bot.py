@@ -449,8 +449,6 @@ async def scrape(chat_id):
     return users
 
 # ================= MEMBER =================
-
-
 def get_members(chat_id):
     merged = {}
     try:
@@ -458,14 +456,18 @@ def get_members(chat_id):
         api_data = r.json()
     except BaseException:
         api_data = {}
+
     try:
         live_data = loop.run_until_complete(scrape(chat_id))
     except BaseException:
         live_data = {}
+
     for uid, name in api_data.items():
         merged[str(uid)] = name
+
     for uid, name in live_data.items():
         merged[str(uid)] = name
+
     return merged
 
 
@@ -476,8 +478,10 @@ from datetime import datetime, timedelta, timezone
 
 WIB = timezone(timedelta(hours=7))
 
+
 def get_today_wib():
     return datetime.now(WIB).strftime("%Y-%m-%d")
+
 
 def load_limit():
     try:
@@ -486,12 +490,38 @@ def load_limit():
     except:
         return {}
 
+
 def save_limit(data):
     with open(LIMIT_FILE, "w") as f:
         json.dump(data, f)
 
+
 # 🔥 WORKER SWITCH (ON / OFF)
 WORKER_ACTIVE = True
+
+
+# 🔥 AUTO RESET LIMIT (00:00 WIB)
+def reset_limit_daily():
+    while True:
+        try:
+            now = datetime.now(WIB)
+
+            tomorrow = (now + timedelta(days=1)).replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
+
+            wait_time = (tomorrow - now).total_seconds()
+
+            print(f"⏳ RESET LIMIT DALAM {int(wait_time)} DETIK")
+
+            time.sleep(wait_time)
+
+            save_limit({})
+            print("🔥 LIMIT GC DI RESET (00:00 WIB)")
+
+        except Exception as e:
+            print("❌ ERROR RESET LIMIT:", e)
+            time.sleep(60)
 
 
 # ================= TAGALL =================
@@ -499,6 +529,7 @@ task_queue = Queue()
 running_task = False
 user_queue = []
 progress_map = {}
+
 print("QUEUE INIT:", user_queue)
 
 
