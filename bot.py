@@ -541,7 +541,6 @@ def auto_delete_messages(chat_id, message_ids):
             print("❌   GAGAL HAPUS:", msg_id, e)
     print("✅   AUTO DELETE SELESAI")
 
-
 # ================= WORKER =================
 def tagall_worker():
     global running_task
@@ -563,202 +562,196 @@ def tagall_worker():
             task_queue.task_done()
             continue
 
+        # ================= LIMIT GC =================
+        limit_data = load_limit()
+        today = get_today_wib()
 
-            append(msg.message_id)
+        links = re.findall(r"(https?://t\.me/\S+)", text)
+        partner_link = links[0] if links else "-"
+        partner_key = normalize_link(partner_link)
 
-                        sent += len(batch)
-                        update_progress(user_id, sent, total)
+        if limit_data.get(partner_key) == today:
+            task_queue.task_done()
+            continue
 
-                    except Exception as e:
-                        print("❌  ", e)
-                        if "Too Many Requests" in str(e):
-                            time.sleep(2)
-                        else:
-                            time.sleep(0.8)
+        print("🔥 AMBIL TASK:", user_id)
 
-                    time.sleep(BASE_DELAY + random.uniform(0.05, 0.2))
+        try:
+            # 🔥 FIX ANTRIAN
+            if user_queue and user_queue[0] != user_id:
+                time.sleep(0.3)
+                task_queue.task_done()
+                continue
 
-# ================= LIMIT GC =================
-limit_data = load_limit()
-today = get_today_wib()
+            running_task = True
+            print("🚀 PROSES USER:", user_id)
 
-links = re.findall(r"(https?://t\.me/\S+)", text)
-partner_link = links[0] if links else "-"
-partner_key = normalize_link(partner_link)
+            start_msg = (
+                "🚀 𝐓𝐀𝐆𝐀𝐋𝐋 𝐃𝐈𝐌𝐔𝐋𝐀𝐈\n\n"
+                f"🔗 partner : {partner_link}\n"
+                "⏰    durasi : 5 menit\n"
+                "📍 JIKA BOT EROR SILAHKAN KESINI @tagallnoirfluerBot"
+            )
 
-if limit_data.get(partner_key) == today:
-    task_queue.task_done()
-    continue
+            keyboard_start = InlineKeyboardMarkup([
+                [InlineKeyboardButton("🛒 My Store", url="https://t.me/storegarf")]
+            ])
 
-print("🔥 AMBIL TASK:", user_id)
+            bot.send_message(chat_id, start_msg)
+            bot.send_message(user_id, start_msg, reply_markup=keyboard_start)
 
-try:
-    # 🔥 FIX ANTRIAN
-    if user_queue and user_queue[0] != user_id:
-        time.sleep(0.3)
-        task_queue.task_done()
-        continue
+            # ================= START =================
+            start_progress(user_id)
+            sent_messages = []
+            sent = 0
 
-    running_task = True
-    print("🚀 PROSES USER:", user_id)
+            members = get_members(chat_id)
+            if not members:
+                task_queue.task_done()
+                continue
 
-    start_msg = (
-        "🚀 𝐓𝐀𝐆𝐀𝐋𝐋 𝐃𝐈𝐌𝐔𝐋𝐀𝐈\n\n"
-        f"🔗 partner : {partner_link}\n"
-        "⏰    durasi : 5 menit\n"
-        "📍 JIKA BOT EROR SILAHKAN KESINI @tagallnoirfluerBot"
-    )
+            user_ids = list(members.keys())
+            total = len(user_ids)
 
-    # 🔥 BUTTON START (PRIVATE)
-    keyboard_start = InlineKeyboardMarkup([
-        [InlineKeyboardButton("🛒 My Store", url="https://t.me/storegarf")]
-    ])
+            random.shuffle(user_ids)
 
-    bot.send_message(chat_id, start_msg)
-    bot.send_message(user_id, start_msg, reply_markup=keyboard_start)
+            BATCH_SIZE = 4
+            BASE_DELAY = 1.4
+            start_time = time.time()
+            duration = 300
 
-    # ================= START =================
-    start_progress(user_id)
-    sent_messages = []
-    sent = 0
+            last_success_time = time.time()  # 🔥 anti stuck tracker
 
-    members = get_members(chat_id)
-    if not members:
-        task_queue.task_done()
-        continue
+            # ================= LOOP TAG =================
+            while time.time() - start_time < duration:
 
-    user_ids = list(members.keys())
-    total = len(user_ids)
+                # 🔥 AUTO BREAK JIKA STUCK 15 DETIK
+                if time.time() - last_success_time > 15:
+                    print("⚠️ STUCK DETECTED, RESTART LOOP")
+                    break
 
-    random.shuffle(user_ids)
+                for i in range(0, total, BATCH_SIZE):
+                    if time.time() - start_time >= duration:
+                        break
 
-    BATCH_SIZE = 4
-    BASE_DELAY = 1.4
-    start_time = time.time()
-    duration = 300
+                    batch = user_ids[i:i + BATCH_SIZE]
 
-    # ================= LOOP TAG =================
-    while time.time() - start_time < duration:
-        for i in range(0, total, BATCH_SIZE):
-            if time.time() - start_time >= duration:
-                break
+                    mention_text = ""
+                    for uid in batch:
+                        name = html.escape(members[uid])
+                        mention_text += f'<a href="tg://user?id={uid}">{name}</a> '
 
-            batch = user_ids[i:i + BATCH_SIZE]
+                    retry = 0
 
-            mention_text = ""
-            for uid in batch:
-                name = html.escape(members[uid])
-                mention_text += f'<a href="tg://user?id={uid}">{name}</a> '
+                    while retry < 3:  # 🔥 retry system
+                        try:
+                            msg = bot.send_message(
+                                chat_id,
+                                f" 💕 BOT TAGALL NOIRFLUER 💖\n\n{text}\n\n{mention_text}",
+                                parse_mode="HTML",
+                                timeout=10
+                            )
 
-            try:
-                msg = bot.send_message(
-                    chat_id,
-                    f" 💕 BOT TAGALL NOIRFLUER 💖\n\n{text}\n\n{mention_text}",
-                    parse_mode="HTML",
-                )
+                            if msg and msg.message_id:
+                                sent_messages.append(msg.message_id)
 
-                if msg and msg.message_id:
-                    sent_messages.append(msg.message_id)
+                            sent += len(batch)
+                            update_progress(user_id, sent, total)
 
-                sent += len(batch)
-                update_progress(user_id, sent, total)
+                            last_success_time = time.time()  # 🔥 reset stuck timer
 
-                # 🔥 DEBUG REALTIME
-                print(f"📊 PROGRESS: {sent}/{total}")
+                            print(f"📊 PROGRESS: {sent}/{total}")
+                            break
 
-            except Exception as e:
-                print("❌       ", e)
+                        except Exception as e:
+                            print("❌       ", e)
 
-                if "Retry in" in str(e):
-                    try:
-                        wait = int(re.search(r"Retry in (\d+)", str(e)).group(1))
-                        print(f"⏳ RETRY WAIT: {wait}s")
-                        time.sleep(wait + 1)
-                    except:
-                        time.sleep(3)
+                            retry += 1
 
-                elif "Too Many Requests" in str(e):
-                    print("🚫 FLOOD DETECTED")
-                    time.sleep(3)
+                            if "Retry in" in str(e):
+                                try:
+                                    wait = int(re.search(r"Retry in (\d+)", str(e)).group(1))
+                                    print(f"⏳ RETRY WAIT: {wait}s")
+                                    time.sleep(wait + 1)
+                                except:
+                                    time.sleep(3)
 
-                elif "Timed out" in str(e):
-                    print("⌛ TIMEOUT DETECTED")
-                    time.sleep(2)
+                            elif "Too Many Requests" in str(e):
+                                print("🚫 FLOOD DETECTED")
+                                time.sleep(3 + retry)
 
-                else:
-                    time.sleep(1)
+                            elif "Timed out" in str(e):
+                                print("⌛ TIMEOUT DETECTED")
+                                time.sleep(2 + retry)
 
-            time.sleep(BASE_DELAY + random.uniform(0.15, 0.35))
+                            else:
+                                time.sleep(1 + retry)
 
-    # ================= SELESAI =================
+                    time.sleep(BASE_DELAY + random.uniform(0.15, 0.35))
 
-    # 🔥 BUTTON SELESAI (GC)
-    keyboard_done = InlineKeyboardMarkup([
-        [InlineKeyboardButton("👑 Creator", url="https://t.me/Brsik23")]
-    ])
-
-    bot.send_message(
-        chat_id,
-        f"✅     𝐓𝐀𝐆𝐀𝐋𝐋 𝐒𝐄𝐋𝐄𝐒𝐀𝐈\n\n"
-        f"🔗 partner : {partner_link}\n"
-        f"👥 Total: {sent}",
-        reply_markup=keyboard_done
-    )
-
-    # SAVE LIMIT
-    partner_key = normalize_link(partner_link)
-    limit_data[partner_key] = today
-    save_limit(limit_data)
-
-    # 🔥 DEBUG FINAL
-    print("📦 TOTAL MSG:", len(sent_messages))
-    print("🧾 SAMPLE MSG ID:", sent_messages[:5])
-
-    # AUTO DELETE
-    if sent_messages:
-        threading.Thread(
-            target=auto_delete_messages,
-            args=(chat_id, sent_messages.copy()),
-            daemon=True
-        ).start()
-
-    # ============== PRIVATE SELESAI ==============
-    try:
-        if user_id in progress_map:
-
-            # 🔥 BUTTON PRIVATE SELESAI
-            keyboard_private_done = InlineKeyboardMarkup([
+            # ================= SELESAI =================
+            keyboard_done = InlineKeyboardMarkup([
                 [InlineKeyboardButton("👑 Creator", url="https://t.me/Brsik23")]
             ])
 
-            bot.edit_message_text(
-                chat_id=user_id,
-                message_id=progress_map[user_id]["msg_id"],
-                text=f"✅  𝐓𝐀𝐆𝐀𝐋𝐋 𝐒𝐄𝐋𝐄𝐒𝐀𝐈\n\n"
-                     f"🔗 partner : {partner_link}\n"
-                     f"🧹 auto delete aktif\n"
-                     f"👥 Total: {sent}\n"
-                     f"⏱ 5 menit",
-                reply_markup=keyboard_private_done
+            bot.send_message(
+                chat_id,
+                f"✅     𝐓𝐀𝐆𝐀𝐋𝐋 𝐒𝐄𝐋𝐄𝐒𝐀𝐈\n\n"
+                f"🔗 partner : {partner_link}\n"
+                f"👥 Total: {sent}",
+                reply_markup=keyboard_done
             )
-    except Exception as e:
-        print("❌  edit private:", e)
 
-except Exception as e:
-    print("❌  ERROR:", e)
+            # SAVE LIMIT
+            limit_data[partner_key] = today
+            save_limit(limit_data)
 
-finally:
-    running_task = False
+            print("📦 TOTAL MSG:", len(sent_messages))
+            print("🧾 SAMPLE MSG ID:", sent_messages[:5])
 
-    if user_queue and user_queue[0] == user_id:
-        user_queue.pop(0)
+            # AUTO DELETE
+            if sent_messages:
+                threading.Thread(
+                    target=auto_delete_messages,
+                    args=(chat_id, sent_messages.copy()),
+                    daemon=True
+                ).start()
 
-    task_queue.task_done()
+            # PRIVATE
+            try:
+                if user_id in progress_map:
+                    keyboard_private_done = InlineKeyboardMarkup([
+                        [InlineKeyboardButton("👑 Creator", url="https://t.me/Brsik23")]
+                    ])
+
+                    bot.edit_message_text(
+                        chat_id=user_id,
+                        message_id=progress_map[user_id]["msg_id"],
+                        text=f"✅  𝐓𝐀𝐆𝐀𝐋𝐋 𝐒𝐄𝐋𝐄𝐒𝐀𝐈\n\n"
+                             f"🔗 partner : {partner_link}\n"
+                             f"🧹 auto delete aktif\n"
+                             f"👥 Total: {sent}\n"
+                             f"⏱ 5 menit",
+                        reply_markup=keyboard_private_done
+                    )
+            except Exception as e:
+                print("❌  edit private:", e)
+
+        except Exception as e:
+            print("❌  ERROR:", e)
+
+        finally:
+            running_task = False
+
+            if user_queue and user_queue[0] == user_id:
+                user_queue.pop(0)
+
+            task_queue.task_done()
 
 
-# 🔥 JALANKAN AUTO RESET (WAJIB)
+# 🔥 AUTO RESET
 threading.Thread(target=reset_limit_daily, daemon=True).start()
-			
+                    
 # ================= HAPUS ANTRIAN =================
             if user_queue:
                 if user_queue[0] == user_id:
