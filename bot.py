@@ -541,7 +541,8 @@ def auto_delete_messages(chat_id, message_ids):
             print("❌   GAGAL HAPUS:", msg_id, e)
     print("✅   AUTO DELETE SELESAI")
 
-# ================= WORKER =================
+            
+ # ================= WORKER =================
 def tagall_worker():
     global running_task
     print("🔥 WORKER HIDUP")
@@ -620,12 +621,11 @@ def tagall_worker():
             start_time = time.time()
             duration = 300
 
-            last_success_time = time.time()  # 🔥 anti stuck tracker
+            last_success_time = time.time()
 
             # ================= LOOP TAG =================
             while time.time() - start_time < duration:
 
-                # 🔥 AUTO BREAK JIKA STUCK 15 DETIK
                 if time.time() - last_success_time > 15:
                     print("⚠️ STUCK DETECTED, RESTART LOOP")
                     break
@@ -643,7 +643,7 @@ def tagall_worker():
 
                     retry = 0
 
-                    while retry < 3:  # 🔥 retry system
+                    while retry < 3:
                         try:
                             msg = bot.send_message(
                                 chat_id,
@@ -658,14 +658,13 @@ def tagall_worker():
                             sent += len(batch)
                             update_progress(user_id, sent, total)
 
-                            last_success_time = time.time()  # 🔥 reset stuck timer
+                            last_success_time = time.time()
 
                             print(f"📊 PROGRESS: {sent}/{total}")
                             break
 
                         except Exception as e:
                             print("❌       ", e)
-
                             retry += 1
 
                             if "Retry in" in str(e):
@@ -727,7 +726,7 @@ def tagall_worker():
                     bot.edit_message_text(
                         chat_id=user_id,
                         message_id=progress_map[user_id]["msg_id"],
-                        text=f"✅  𝐓𝐀𝐆𝐀𝐋𝐋 𝐒𝐄𝐋𝐄𝐒𝐀𝐈\n\n"
+                        text=f"✅  𝐓𝐀𝐆𝐀𝐋𝐋 𝐒𝐄𝐋𝐀𝐈\n\n"
                              f"🔗 partner : {partner_link}\n"
                              f"🧹 auto delete aktif\n"
                              f"👥 Total: {sent}\n"
@@ -743,28 +742,19 @@ def tagall_worker():
         finally:
             running_task = False
 
-            if user_queue and user_queue[0] == user_id:
-                user_queue.pop(0)
-
-            task_queue.task_done()
-
-
-# 🔥 AUTO RESET
-threading.Thread(target=reset_limit_daily, daemon=True).start()
-                    
-# ================= HAPUS ANTRIAN =================
+            # 🔥 HAPUS ANTRIAN (SUDAH DIGABUNG DI SINI)
             if user_queue:
                 if user_queue[0] == user_id:
                     user_queue.pop(0)
                 elif user_id in user_queue:
                     user_queue.remove(user_id)
 
-        except Exception as e:
-            print("❌  ERROR:", e)
-
-        finally:
-            running_task = False
             task_queue.task_done()
+
+
+# 🔥 AUTO RESET
+threading.Thread(target=reset_limit_daily, daemon=True).start()                               
+
 
 # ================= CEK JOIN =================
 def is_user_joined(user_id):
