@@ -969,9 +969,12 @@ def main():
 
     bot = updater.bot
 
+    # 🔥 DATABASE
     database9.start_system(bot)
 
     dp = updater.dispatcher
+
+    # ================= COMMAND =================
     dp.add_handler(CommandHandler("restore", restore_cmd))
     dp.add_handler(CommandHandler("start", start_cmd))
     dp.add_handler(CommandHandler("addpartner", add_partner))
@@ -985,8 +988,11 @@ def main():
     dp.add_handler(CommandHandler("delrules", del_rules))
     dp.add_handler(CommandHandler("off", off_cmd))
     dp.add_handler(CommandHandler("on", on_cmd))
+
+    # ================= CALLBACK =================
     dp.add_handler(CallbackQueryHandler(button_handler))
 
+    # ================= PRIVATE =================
     dp.add_handler(
         MessageHandler(
             Filters.text & ~Filters.command,
@@ -994,24 +1000,30 @@ def main():
         )
     )
 
+    # ================= TELETHON =================
     client.start()
     print("✅ Telethon nyala")
 
+    # ================= WORKER =================
     t = threading.Thread(target=tagall_worker)
     t.daemon = True
     t.start()
 
+    # ================= AUTO RESET LIMIT =================
+    threading.Thread(target=reset_limit_daily, daemon=True).start()
+
+    # ================= START BOT =================
     updater.start_polling(
-    poll_interval=2.5,
-    timeout=20,
-    clean=True
+        poll_interval=2.5,
+        timeout=20,
+        clean=True
     )
 
-updater.idle()
+    print("🚀 BOT RUNNING...")
+
+    updater.idle()
 
 
+# ================= RUN =================
 if __name__ == "__main__":
     main()
-	
-
-	
