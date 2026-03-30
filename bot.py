@@ -598,10 +598,13 @@ try:
         "📍 JIKA BOT EROR SILAHKAN KESINI @tagallnoirfluerBot"
     )
 
-    bot.send_message(chat_id, start_msg)
-    bot.send_message(user_id, start_msg)
+    # 🔥 BUTTON STORE (PRIVATE)
+    keyboard_start = InlineKeyboardMarkup([
+        [InlineKeyboardButton("🛒 My Store", url="https://t.me/storegarf")]
+    ])
 
-            
+    bot.send_message(chat_id, start_msg)
+    bot.send_message(user_id, start_msg, reply_markup=keyboard_start)
 
 # ================= START =================
             start_progress(user_id)
@@ -782,7 +785,7 @@ def handle_private(update: Update, context: CallbackContext):
     # ================= LIMIT ANTRIAN =================
     antrian = task_queue.qsize()
 
-    if antrian >= 3:
+    if antrian >= 5:
         msg.reply_text(
             "⚠️ 𝐀𝐍𝐓𝐑𝐈𝐀𝐍 𝐏𝐄𝐍𝐔𝐇\n\n"
             "⏳ Tunggu beberapa menit\n"
@@ -883,7 +886,16 @@ def restore_cmd(update, context):
 
 def main():
     global bot
-    updater = Updater(TOKEN, use_context=True)
+
+    updater = Updater(
+        TOKEN,
+        use_context=True,
+        request_kwargs={
+            'read_timeout': 20,
+            'connect_timeout': 20
+        }
+    )
+
     bot = updater.bot
 
     database4.start_system(bot)
@@ -918,12 +930,17 @@ def main():
     t.daemon = True
     t.start()
 
-    updater.start_polling()
-    updater.idle()
+    updater.start_polling(
+    poll_interval=2.5,
+    timeout=20,
+    clean=True
+    )
+
+updater.idle()
 
 
 if __name__ == "__main__":
     main()
-
+	
 
 	
