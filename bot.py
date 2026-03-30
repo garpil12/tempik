@@ -1005,12 +1005,14 @@ def main():
     print("✅ Telethon nyala")
 
     # ================= WORKER =================
-    t = threading.Thread(target=tagall_worker)
-    t.daemon = True
-    t.start()
+    worker_thread = threading.Thread(target=tagall_worker)
+    worker_thread.daemon = True
+    worker_thread.start()
 
     # ================= AUTO RESET LIMIT =================
-    threading.Thread(target=reset_limit_daily, daemon=True).start()
+    reset_thread = threading.Thread(target=reset_limit_daily)
+    reset_thread.daemon = True
+    reset_thread.start()
 
     # ================= START BOT =================
     updater.start_polling(
