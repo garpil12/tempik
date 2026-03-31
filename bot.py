@@ -452,15 +452,11 @@ def start_cmd(update: Update, context: CallbackContext):
                 parse_mode="Markdown"
             )
 
-    else:
-        update.message.reply_text(
-            text,
-            reply_markup=markup,
-            parse_mode="Markdown"
-        )
 # ================= CALLBACK =================
 
 def button_handler(update: Update, context: CallbackContext):
+    global WORKER_ACTIVE  # 🔥 WAJIB DI SINI
+
     query = update.callback_query
     query.answer()
     data = load_setting()
@@ -561,7 +557,6 @@ def button_handler(update: Update, context: CallbackContext):
         if query.from_user.id not in OWNER_IDS:
             return
 
-        global WORKER_ACTIVE
         WORKER_ACTIVE = True
 
         context.bot.send_message(
@@ -573,13 +568,12 @@ def button_handler(update: Update, context: CallbackContext):
         if query.from_user.id not in OWNER_IDS:
             return
 
-        global WORKER_ACTIVE
         WORKER_ACTIVE = False
 
         context.bot.send_message(
             chat_id=query.from_user.id,
             text="🔴 Tagall berhasil dimatikan"
-    )
+        )    
         
 # ================= TELETHON =================
 
