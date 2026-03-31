@@ -12,24 +12,24 @@ from queue import Queue
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Updater, MessageHandler, Filters, CallbackContext, CommandHandler, CallbackQueryHandler
 from telethon import TelegramClient
-import database9
+import database0
 
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
-TOKEN = "8685315507:AAEc6ybSHdpZSap5mBTvEiHX4e-o8NVnSvg"
+TOKEN = "8307438695:AAGsyFa0IJQqv1zI1btvrqQsF4jnvMVLi5Q"
 API_URL = "http://127.0.0.1:5000/get"
-TARGET_CHATS = [-1002896045673]
-FORCE_GROUP = -1002896045673   # 🔥 WAJIB (buat cek join)
-FORCE_LINK = "https://t.me/ofcnoirfleur"
+TARGET_CHATS = [-1002430300514]
+FORCE_GROUP = -1002430300514   # 🔥 WAJIB (buat cek join)
+FORCE_LINK = "https://t.me/officialhyperion"r"
 
 OWNER_IDS = [8209644174, 5674665043]
-PARTNER_FILE = "partner.json5"
-SETTING_FILE = "setting.json5"
+PARTNER_FILE = "partner.json0"
+SETTING_FILE = "setting.json0"
 
 api_id = 33370509
 api_hash = "669af6caebf2aca264b16cf8b40d37b2"
-client = TelegramClient("session_new8", api_id, api_hash)
+client = TelegramClient("session_new0", api_id, api_hash)
 
 task_queue = Queue()
 running_task = False  # 🔥 ANTI DOUBLE TASK
@@ -289,12 +289,12 @@ def start_cmd(update: Update, context: CallbackContext):
 
     # ================= RGB GLITCH =================
     glitch = [
-        "💜 NOIRFLUER 💜",
-        "💙 NOIRFLUER 💙",
-        "💚 NOIRFLUER 💚",
-        "💛 NOIRFLUER 💛",
-        "🧡 NOIRFLUER 🧡",
-        "❤️ NOIRFLUER ❤️"
+        "💜 HYPΞRIØN 💜",
+        "💙 HYPERION 💙",
+        "💚 HYPΞRIØN 💚",
+        "💛 HYPERION 💛",
+        "🧡 HYPΞRIØN 🧡",
+        "❤️ HYPERION ❤️"
     ]
 
     for g in glitch:
@@ -338,7 +338,7 @@ def start_cmd(update: Update, context: CallbackContext):
 
     # ================= FINAL TEXT (FIX CLEAN) =================
     text = (
-        "𓊆 ✨ 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐓𝐎 𝐁𝐎𝐓 𝗡𝗢𝗜𝗥𝗙𝗟𝗨𝗘𝗥 ✨ 𓊇 \n\n"
+        "𓊆 ✨ 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐓𝐎 𝗕𝗢𝗧 𝗛𝗬𝗣𝗘𝗥𝗜𝗢𝗡 ✨ 𓊇 \n\n"
 
         "╭───────────────╮\n"
         "│ ٬٬ ࣪ ، 𒀭 bot tag all dengan sistem otomatis.\n"
@@ -378,7 +378,7 @@ def start_cmd(update: Update, context: CallbackContext):
         pass
 
     # ================= FOTO SYSTEM =================
-    photo_path = "database9/start.jpg"
+    photo_path = "database0/start.jpg"
 
     if data.get("start_pict"):
         context.bot.send_photo(
@@ -472,7 +472,7 @@ def get_members(chat_id):
 
 
 # ================= LIMIT GC =================
-LIMIT_FILE = "limit_gc.json9"
+LIMIT_FILE = "limit_gc.json0"
 
 from datetime import datetime, timedelta, timezone
 
@@ -622,7 +622,7 @@ def tagall_worker():
                 "🚀 𝐓𝐀𝐆𝐀𝐋𝐋 𝐃𝐈𝐌𝐔𝐋𝐀𝐈\n\n"
                 f"🔗 partner : {partner_link}\n"
                 "⏰    durasi : 5 menit\n"
-                "📍 JIKA BOT EROR SILAHKAN KESINI @tagallnoirfluerBot"
+                "📍 JIKA BOT EROR SILAHKAN KESINI "
             )
 
             keyboard_start = InlineKeyboardMarkup([
@@ -678,7 +678,7 @@ def tagall_worker():
                         try:
                             msg = bot.send_message(
                                 chat_id,
-                                f" 💕 BOT TAGALL NOIRFLUER 💖\n\n{text}\n\n{mention_text}",
+                                f" 💕 𝗕𝗢𝗧 𝗧𝗔𝗚𝗔𝗟𝗟 𝗛𝗬𝗣𝗘𝗥𝗜𝗢𝗡 💖\n\n{text}\n\n{mention_text}",
                                 parse_mode="HTML",
                                 timeout=10
                             )
@@ -924,8 +924,8 @@ def restore_cmd(update, context):
             files = z.namelist()
 
             # ================= VALIDASI ISI =================
-            valid = any("partner.json5" in f for f in files) or \
-                    any("setting.json5" in f for f in files)
+            valid = any("partner.json0" in f for f in files) or \
+                    any("setting.json0" in f for f in files)
 
             if not valid:
                 update.message.reply_text("❌ isi zip tidak valid")
@@ -934,12 +934,12 @@ def restore_cmd(update, context):
             # ================= BACKUP LAMA =================
             backup_name = f"backup_before_restore_{int(time.time())}.zip"
             with zipfile.ZipFile(backup_name, 'w') as backup:
-                if os.path.exists("partner.json5"):
-                    backup.write("partner.json5")
-                if os.path.exists("setting.json5"):
-                    backup.write("setting.json5")
-                if os.path.exists("database9"):
-                    for root, dirs, files2 in os.walk("database9"):
+                if os.path.exists("partner.json0"):
+                    backup.write("partner.json0")
+                if os.path.exists("setting.json0"):
+                    backup.write("setting.json0")
+                if os.path.exists("database0"):
+                    for root, dirs, files2 in os.walk("database0"):
                         for f in files2:
                             backup.write(os.path.join(root, f))
 
@@ -950,7 +950,8 @@ def restore_cmd(update, context):
 
         # ================= AUTO RESTART =================
         import os
-        os.execv("/root/noirbot/venv/bin/python", ["python", "bot6.py"])
+        os.execv("/root/tagallbot/venv/bin/python", ["python", "bot0
+        .py"])
 
     except Exception as e:
         update.message.reply_text(f"❌ restore gagal\n{e}")
@@ -970,7 +971,7 @@ def main():
     bot = updater.bot
 
     # 🔥 DATABASE
-    database9.start_system(bot)
+    database0.start_system(bot)
 
     dp = updater.dispatcher
 
@@ -1016,7 +1017,7 @@ def main():
 
     # ================= START BOT =================
     updater.start_polling(
-        poll_interval=2.5,
+        poll_interval=2.2,
         timeout=20,
         clean=True
     )
