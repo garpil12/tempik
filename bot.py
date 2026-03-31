@@ -458,7 +458,6 @@ def start_cmd(update: Update, context: CallbackContext):
             reply_markup=markup,
             parse_mode="Markdown"
         )
-
 # ================= CALLBACK =================
 
 def button_handler(update: Update, context: CallbackContext):
@@ -482,37 +481,105 @@ def button_handler(update: Update, context: CallbackContext):
     # ================= OWNER BUTTON =================
 
     elif query.data == "cmd_addpict":
-        query.message.reply_text("🖼️ Reply foto lalu ketik /addpict")
+        context.bot.send_message(
+            chat_id=query.from_user.id,
+            text="🖼️ Reply foto lalu ketik /addpict"
+        )
 
     elif query.data == "cmd_delpict":
-        query.message.reply_text("🗑️ Ketik /delpict")
+        if query.from_user.id not in OWNER_IDS:
+            return
+
+        data = load_setting()
+        if "start_pict" not in data:
+            context.bot.send_message(
+                chat_id=query.from_user.id,
+                text="⚠️ Foto belum ada"
+            )
+            return
+
+        data.pop("start_pict", None)
+        save_setting(data)
+
+        context.bot.send_message(
+            chat_id=query.from_user.id,
+            text="✅ Foto berhasil dihapus"
+        )
 
     elif query.data == "cmd_addpj":
-        query.message.reply_text("👤 Ketik: /addpj @username")
+        context.bot.send_message(
+            chat_id=query.from_user.id,
+            text="👤 Kirim: /addpj @username"
+        )
 
     elif query.data == "cmd_delpj":
-        query.message.reply_text("❌ Ketik: /delpj")
+        if query.from_user.id not in OWNER_IDS:
+            return
+
+        data = load_setting()
+
+        if "pj" not in data:
+            context.bot.send_message(
+                chat_id=query.from_user.id,
+                text="⚠️ PJ belum ada"
+            )
+            return
+
+        data.pop("pj", None)
+        save_setting(data)
+
+        context.bot.send_message(
+            chat_id=query.from_user.id,
+            text="✅ PJ berhasil dihapus"
+        )
 
     elif query.data == "cmd_listpartner":
+        if query.from_user.id not in OWNER_IDS:
+            return
+
+        data_partner = load_partner()
+
+        if not data_partner:
+            context.bot.send_message(
+                chat_id=query.from_user.id,
+                text="❌ Partner kosong"
+            )
+            return
+
+        text = "📋 𝐋𝐈𝐒𝐓 𝐏𝐀𝐑𝐓𝐍𝐄𝐑\n\n"
+
+        for i, p in enumerate(data_partner, 1):
+            text += f"〔{i}〕 {p['name']}\n"
+            text += f"🔗 {p['link']}\n\n"
+
         context.bot.send_message(
             chat_id=query.from_user.id,
-            text="📋 Membuka list partner..."
+            text=text
         )
-        list_partner(update, context)
 
     elif query.data == "cmd_on":
+        if query.from_user.id not in OWNER_IDS:
+            return
+
+        global WORKER_ACTIVE
+        WORKER_ACTIVE = True
+
         context.bot.send_message(
             chat_id=query.from_user.id,
-            text="🟢 Mengaktifkan tagall..."
+            text="🟢 Tagall berhasil diaktifkan"
         )
-        on_cmd(update, context)
 
     elif query.data == "cmd_off":
+        if query.from_user.id not in OWNER_IDS:
+            return
+
+        global WORKER_ACTIVE
+        WORKER_ACTIVE = False
+
         context.bot.send_message(
             chat_id=query.from_user.id,
-            text="🔴 Mematikan tagall..."
-        )
-        off_cmd(update, context)
+            text="🔴 Tagall berhasil dimatikan"
+    )
         
 # ================= TELETHON =================
 
