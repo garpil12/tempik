@@ -197,6 +197,59 @@ def bot_off(update, context):
     update.message.reply_text("❌ Tagall dimatikan (OFF)")
 
 
+def help_owner(update: Update, context: CallbackContext):
+    user_id = update.effective_user.id
+
+    if user_id not in OWNER_IDS:
+        return
+
+    text = (
+        "👑 𝗢𝗪𝗡𝗘𝗥 𝗣𝗔𝗡𝗘𝗟\n"
+        "━━━━━━━━━━━━━━━━━━\n\n"
+
+        "🖼️ 𝗠𝗘𝗗𝗜𝗔\n"
+        "➜ /addpict  (pasang foto)\n"
+        "➜ /delpict  (hapus foto)\n\n"
+
+        "👤 𝗣𝗘𝗡𝗚𝗔𝗧𝗨𝗥𝗔𝗡\n"
+        "➜ /addpj    (tambah PJ)\n"
+        "➜ /delpj    (hapus PJ)\n\n"
+
+        "📋 𝗣𝗔𝗥𝗧𝗡𝗘𝗥\n"
+        "➜ /listpartner\n\n"
+
+        "⚙️ 𝗦𝗜𝗦𝗧𝗘𝗠\n"
+        "➜ /on   (aktifkan)\n"
+        "➜ /off  (matikan)\n\n"
+
+        "━━━━━━━━━━━━━━━━━━\n"
+        "⚡ Klik tombol di bawah / pakai command manual"
+    )
+
+    keyboard = InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("🖼️ Add", callback_data="cmd_addpict"),
+            InlineKeyboardButton("🗑️ Del", callback_data="cmd_delpict")
+        ],
+        [
+            InlineKeyboardButton("👤 Add PJ", callback_data="cmd_addpj"),
+            InlineKeyboardButton("❌ Del PJ", callback_data="cmd_delpj")
+        ],
+        [
+            InlineKeyboardButton("📋 Partner", callback_data="cmd_listpartner")
+        ],
+        [
+            InlineKeyboardButton("🟢 ON", callback_data="cmd_on"),
+            InlineKeyboardButton("🔴 OFF", callback_data="cmd_off")
+        ],
+        [
+            InlineKeyboardButton("👑 Creator", url="https://t.me/Brsik23")
+        ]
+    ])
+
+    update.message.reply_text(text, reply_markup=keyboard)
+    
+
 def add_pict(update, context):
     if update.effective_user.id not in OWNER_IDS or update.effective_chat.type != "private":
         return
