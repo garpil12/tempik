@@ -479,6 +479,41 @@ def button_handler(update: Update, context: CallbackContext):
         else:
             query.answer("JOIN DULU WOI 😡", show_alert=True)
 
+    # ================= OWNER BUTTON =================
+
+    elif query.data == "cmd_addpict":
+        query.message.reply_text("🖼️ Reply foto lalu ketik /addpict")
+
+    elif query.data == "cmd_delpict":
+        query.message.reply_text("🗑️ Ketik /delpict")
+
+    elif query.data == "cmd_addpj":
+        query.message.reply_text("👤 Ketik: /addpj @username")
+
+    elif query.data == "cmd_delpj":
+        query.message.reply_text("❌ Ketik: /delpj")
+
+    elif query.data == "cmd_listpartner":
+        context.bot.send_message(
+            chat_id=query.from_user.id,
+            text="📋 Membuka list partner..."
+        )
+        list_partner(update, context)
+
+    elif query.data == "cmd_on":
+        context.bot.send_message(
+            chat_id=query.from_user.id,
+            text="🟢 Mengaktifkan tagall..."
+        )
+        on_cmd(update, context)
+
+    elif query.data == "cmd_off":
+        context.bot.send_message(
+            chat_id=query.from_user.id,
+            text="🔴 Mematikan tagall..."
+        )
+        off_cmd(update, context)
+        
 # ================= TELETHON =================
 
 
@@ -1003,8 +1038,7 @@ def restore_cmd(update, context):
 
         # ================= AUTO RESTART =================
         import os
-        os.execv("/root/tagallbot/venv/bin/python", ["python", "bot0
-        .py"])
+        os.execv("/root/tagallbot/venv/bin/python", ["python", "bot0.py"])
 
     except Exception as e:
         update.message.reply_text(f"❌ restore gagal\n{e}")
@@ -1024,7 +1058,7 @@ def main():
     bot = updater.bot
 
     # 🔥 DATABASE
-    database0.start_system(bot)
+    database0.start_database_system(bot)
 
     dp = updater.dispatcher
 
