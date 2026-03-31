@@ -21,7 +21,7 @@ TOKEN = "8307438695:AAGsyFa0IJQqv1zI1btvrqQsF4jnvMVLi5Q"
 API_URL = "http://127.0.0.1:5000/get"
 TARGET_CHATS = [-1002430300514]
 FORCE_GROUP = -1002430300514   # 🔥 WAJIB (buat cek join)
-FORCE_LINK = "https://t.me/officialhyperion"r"
+FORCE_LINK = "https://t.me/officialhyperion"
 
 OWNER_IDS = [8209644174, 5674665043]
 PARTNER_FILE = "partner.json0"
@@ -1065,6 +1065,8 @@ def main():
     # ================= COMMAND =================
     dp.add_handler(CommandHandler("restore", restore_cmd))
     dp.add_handler(CommandHandler("start", start_cmd))
+    dp.add_handler(CommandHandler("help", help_owner))  # 🔥 TAMBAH INI
+
     dp.add_handler(CommandHandler("addpartner", add_partner))
     dp.add_handler(CommandHandler("delpartner", del_partner))
     dp.add_handler(CommandHandler("listpartner", list_partner))
